@@ -661,7 +661,7 @@ pub fn extract_text_sections(
             * bevy_math::Affine3A::from_translation((-0.5 * uinode.size()).extend(0.));
         transform.translation = transform.translation.round();
 
-        let mut color = LinearRgba::WHITE;
+        let mut color = TextColor::WHITE;
         let mut current_span = usize::MAX;
         for (
             i,
@@ -682,7 +682,7 @@ pub fn extract_text_sections(
                             .map(|t| t.entity)
                             .unwrap_or(Entity::PLACEHOLDER),
                     )
-                    .map(|text_color| LinearRgba::from(text_color.0))
+                    .map(|text_color| *text_color)
                     .unwrap_or_default();
                 current_span = *span_index;
             }
@@ -711,7 +711,7 @@ pub fn extract_text_sections(
                     id,
                     ExtractedUiNode {
                         stack_index: uinode.stack_index,
-                        color,
+                        color: color.color_for_glyph_idx(i).into(),
                         image: atlas_info.texture.id(),
                         clip: clip.map(|clip| clip.clip),
                         camera_entity: render_camera_entity.id(),

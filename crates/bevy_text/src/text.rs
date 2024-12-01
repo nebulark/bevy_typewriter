@@ -329,9 +329,18 @@ impl Default for TextFont {
 }
 
 /// The color of the text for this section.
-#[derive(Component, Copy, Clone, Debug, Deref, DerefMut, Reflect)]
+#[derive(Component, Copy, Clone, Debug, Reflect)]
 #[reflect(Component, Default, Debug)]
-pub struct TextColor(pub Color);
+pub struct TextColor {
+    /// color when glyphindex < first_right_color_idx
+    pub color_left : Color,
+
+     /// color when glyphindex >= first_right_color_idx
+    pub color_right : Color,
+
+    /// decides when to switch colors
+    pub first_right_color_idx : u16,
+}
 
 impl Default for TextColor {
     fn default() -> Self {
@@ -339,17 +348,17 @@ impl Default for TextColor {
     }
 }
 
-impl<T: Into<Color>> From<T> for TextColor {
-    fn from(color: T) -> Self {
-        Self(color.into())
-    }
-}
-
 impl TextColor {
     /// Black colored text
-    pub const BLACK: Self = TextColor(Color::BLACK);
+    pub const BLACK: Self = TextColor {  color_left : Color::BLACK, color_right : Color::BLACK,first_right_color_idx : 0};
     /// White colored text
-    pub const WHITE: Self = TextColor(Color::WHITE);
+    pub const WHITE: Self = TextColor {  color_left : Color::WHITE, color_right : Color::WHITE,first_right_color_idx : 0};
+
+    /// Gets the color we want to render the glyph depending on index. Needed for coloring individual glyphs to show typewriter progress
+    pub fn color_for_glyph_idx(&self, idx : usize) -> Color {
+        // unsure why we need to add +1 here, maybe there is an additional invisible glyph at the start of each text?
+        if idx < self.first_right_color_idx as usize + 1 { self.color_left} else {self.color_right }
+        }
 }
 
 /// Determines how lines will be broken when preventing text from running out of bounds.

@@ -180,14 +180,15 @@ pub fn extract_text2d_sprite(
         let transform = *global_transform
             * GlobalTransform::from_translation(alignment_translation.extend(0.))
             * scaling;
-        let mut color = LinearRgba::WHITE;
+        let mut color = TextColor::WHITE;
         let mut current_span = usize::MAX;
-        for PositionedGlyph {
+
+        for (i, PositionedGlyph {
             position,
             atlas_info,
             span_index,
             ..
-        } in &text_layout_info.glyphs
+        }) in text_layout_info.glyphs.iter().enumerate()
         {
             if *span_index != current_span {
                 color = text_styles
@@ -198,7 +199,7 @@ pub fn extract_text2d_sprite(
                             .map(|t| t.entity)
                             .unwrap_or(Entity::PLACEHOLDER),
                     )
-                    .map(|(_, text_color)| LinearRgba::from(text_color.0))
+                    .map(|(_, text_color)| *text_color)
                     .unwrap_or_default();
                 current_span = *span_index;
             }
@@ -211,7 +212,7 @@ pub fn extract_text2d_sprite(
                 ),
                 ExtractedSprite {
                     transform: transform * GlobalTransform::from_translation(position.extend(0.)),
-                    color,
+                    color: color.color_for_glyph_idx(i).into(),
                     rect: Some(atlas.textures[atlas_info.location.glyph_index].as_rect()),
                     custom_size: None,
                     image_handle_id: atlas_info.texture.id(),

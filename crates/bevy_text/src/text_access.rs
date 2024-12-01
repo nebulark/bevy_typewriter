@@ -175,7 +175,7 @@ impl<'a, R: TextRoot> Iterator for TextSpanIter<'a, R> {
                 if let Some(children) = maybe_children {
                     self.stack.push((children, 0));
                 }
-                return Some((root_entity, 0, text.read_span(), text_font, color.0));
+                return Some((root_entity, 0, text.read_span(), text_font, color.color_right));
             }
             return None;
         }
@@ -201,7 +201,7 @@ impl<'a, R: TextRoot> Iterator for TextSpanIter<'a, R> {
                 if let Some(children) = maybe_children {
                     self.stack.push((children, 0));
                 }
-                return Some((entity, depth, span.read_span(), text_font, color.0));
+                return Some((entity, depth, span.read_span(), text_font, color.color_right));
             }
 
             // All children at this stack entry have been iterated.
