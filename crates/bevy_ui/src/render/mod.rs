@@ -701,7 +701,7 @@ pub fn extract_text_sections(
                 .glyphs
                 .get(i + 1)
                 .map(|info| {
-                    info.span_index != current_span || info.atlas_info.texture != atlas_info.texture
+                    info.span_index != current_span || info.atlas_info.texture != atlas_info.texture || i == 0 || color.has_different_color_for_indices (i, i-1)
                 })
                 .unwrap_or(true)
             {

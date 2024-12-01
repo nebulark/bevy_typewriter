@@ -352,27 +352,43 @@ impl Default for TextColor {
     }
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TextColorType {
+    Left,
+    Middle,
+    Right
+}
+
 impl TextColor {
     /// Black colored text
     pub const BLACK: Self = TextColor {  color_left : Color::BLACK, color_middle : Color::BLACK, color_right : Color::BLACK, left_letters : 0, middle_letters : 0};
     /// White colored text
-    pub const WHITE: Self = TextColor {  color_left : Color::WHITE, color_middle : Color::WHITE, color_right : Color::WHITE,left_letters : 0, middle_letters : 0};
+    pub const WHITE: Self = TextColor {  color_left : Color::WHITE, color_middle : Color::WHITE, color_right : Color::WHITE, left_letters : 0, middle_letters : 0};
 
     /// Gets the color we want to render the glyph depending on index. Needed for coloring individual glyphs to show typewriter progress
     pub fn color_for_glyph_idx(&self, idx : usize) -> Color {
-
-        if idx < self.left_letters.into() {
-            self.color_left
+        match self.get_color_type_for_idx(idx) {
+            TextColorType::Left => self.color_left,
+            TextColorType::Middle => self.color_middle,
+            TextColorType::Right => self.color_right,
         }
-        else if  idx < (self.left_letters +  self.middle_letters).into()
-        {
-            self.color_middle
+    }
+
+    /// returns true if those two indices would return diffrent colors when used in color_for_glyph_idx
+    pub fn has_different_color_for_indices(&self, a : usize, b : usize) -> bool {
+       self.get_color_type_for_idx(a) == self.get_color_type_for_idx(b)
+    }
+
+    fn get_color_type_for_idx(&self, idx : usize) -> TextColorType {
+        if idx < self.left_letters.into() {
+            TextColorType::Left
+        }
+        else if  idx < (self.left_letters +  self.middle_letters).into() {
+            TextColorType::Middle
         }
         else {
-            self.color_right
+            TextColorType::Right
         }
-
-        // unsure why we need to add +1 here, maybe there is an additional invisible glyph at the start of each text?
     }
 }
 
