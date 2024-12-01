@@ -332,14 +332,18 @@ impl Default for TextFont {
 #[derive(Component, Copy, Clone, Debug, Reflect)]
 #[reflect(Component, Default, Debug)]
 pub struct TextColor {
-    /// color when glyphindex < first_right_color_idx
+    /// color when glyphindex <= left_letters
     pub color_left : Color,
 
-     /// color when glyphindex >= first_right_color_idx
+    /// color when glyphindex > left_letters && <= color_left + color_middle 
+    pub color_middle : Color,
+
+     /// color when glyphindex > color_left + color_middle 
     pub color_right : Color,
 
     /// decides when to switch colors
-    pub first_right_color_idx : u16,
+    pub left_letters : u16,
+    pub middle_letters : u16,
 }
 
 impl Default for TextColor {
@@ -350,15 +354,26 @@ impl Default for TextColor {
 
 impl TextColor {
     /// Black colored text
-    pub const BLACK: Self = TextColor {  color_left : Color::BLACK, color_right : Color::BLACK,first_right_color_idx : 0};
+    pub const BLACK: Self = TextColor {  color_left : Color::BLACK, color_middle : Color::BLACK, color_right : Color::BLACK, left_letters : 0, middle_letters : 0};
     /// White colored text
-    pub const WHITE: Self = TextColor {  color_left : Color::WHITE, color_right : Color::WHITE,first_right_color_idx : 0};
+    pub const WHITE: Self = TextColor {  color_left : Color::WHITE, color_middle : Color::WHITE, color_right : Color::WHITE,left_letters : 0, middle_letters : 0};
 
     /// Gets the color we want to render the glyph depending on index. Needed for coloring individual glyphs to show typewriter progress
     pub fn color_for_glyph_idx(&self, idx : usize) -> Color {
-        // unsure why we need to add +1 here, maybe there is an additional invisible glyph at the start of each text?
-        if idx < self.first_right_color_idx as usize + 1 { self.color_left} else {self.color_right }
+
+        if idx < self.left_letters.into() {
+            self.color_left
         }
+        else if  idx < (self.left_letters +  self.middle_letters).into()
+        {
+            self.color_middle
+        }
+        else {
+            self.color_right
+        }
+
+        // unsure why we need to add +1 here, maybe there is an additional invisible glyph at the start of each text?
+    }
 }
 
 /// Determines how lines will be broken when preventing text from running out of bounds.
