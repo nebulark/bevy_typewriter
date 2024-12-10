@@ -379,6 +379,11 @@ impl TextColor {
        self.get_color_type_for_idx(a) == self.get_color_type_for_idx(b)
     }
 
+    /// returns true if this textcolor uses diffrent colors for indices
+    pub fn is_multicolor(&self) -> bool {
+        self.left_letters != 0 || self.middle_letters != 0
+    }
+
     fn get_color_type_for_idx(&self, idx : usize) -> TextColorType {
         if idx < self.left_letters.into() {
             TextColorType::Left
