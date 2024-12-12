@@ -5,7 +5,6 @@ use crate::{
     TextSpanAccess, TextWriter, YAxisOrientation,
 };
 use bevy_asset::Assets;
-use bevy_color::LinearRgba;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::component::Component;
 use bevy_ecs::{

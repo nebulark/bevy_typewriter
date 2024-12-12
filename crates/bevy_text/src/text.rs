@@ -341,8 +341,10 @@ pub struct TextColor {
      /// color when glyphindex > color_left + color_middle 
     pub color_right : Color,
 
-    /// decides when to switch colors
+    /// how many letters to draw of left color
     pub left_letters : u16,
+
+    /// how many letters to draw of middle color
     pub middle_letters : u16,
 }
 
